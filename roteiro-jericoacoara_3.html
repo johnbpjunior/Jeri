@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌊 Jericoacoara — Roteiro da Viagem</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f0e8; color: #2c2c2a; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+
+  .hero {
+    background: linear-gradient(160deg, #085041 0%, #0F6E56 45%, #1D9E75 100%);
+    color: white; padding: 3rem 1.5rem 4rem; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='white' opacity='0.1'/%3E%3C/svg%3E");
+  }
+  .hero-emoji { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+  .hero h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; }
+  .hero .subtitle { font-size: 1.05rem; opacity: 0.85; margin-top: 0.4rem; }
+  .hero .dates { display: inline-block; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 100px; padding: 0.35rem 1rem; font-size: 0.88rem; margin-top: 1rem; }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+  .section-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #0F6E56; margin: 2.5rem 0 1rem; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: #9FE1CB; }
+
+  .day-card { background: white; border-radius: 16px; margin-bottom: 1rem; overflow: hidden; border: 1px solid #e0ece7; }
+  .day-header {
+    padding: 1rem 1.25rem;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    min-height: 56px;
+    touch-action: manipulation;
+  }
+  .day-card.open .day-header { border-bottom-color: #f0f4f2; }
+  .day-badge { background: #E1F5EE; color: #0F6E56; border-radius: 10px; padding: 0.3rem 0.7rem; font-size: 0.78rem; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+  .day-header h2 { font-size: 1rem; font-weight: 600; flex: 1; color: #1a1a18; }
+  .day-header .day-date { font-size: 0.8rem; color: #888; white-space: nowrap; }
+  .toggle-icon { font-size: 1.2rem; color: #9FE1CB; transition: transform 0.25s; flex-shrink: 0; width: 24px; text-align: center; }
+  .day-card.open .toggle-icon { transform: rotate(180deg); }
+
+  .day-body { display: none; }
+  .day-card.open .day-body { display: block; }
+
+  .timeline { padding: 1rem 1.25rem; }
+  .timeline-item { display: flex; gap: 14px; align-items: flex-start; padding: 0.5rem 0; position: relative; }
+  .timeline-item:not(:last-child)::after { content: ''; position: absolute; left: 38px; top: 32px; bottom: -8px; width: 1px; background: #e8f5ef; }
+  .time-badge { min-width: 52px; font-size: 0.72rem; font-weight: 600; color: #0F6E56; background: #E1F5EE; border-radius: 6px; padding: 3px 6px; text-align: center; flex-shrink: 0; margin-top: 2px; }
+  .activity { font-size: 0.92rem; color: #2c2c2a; line-height: 1.4; padding-top: 2px; }
+
+  .expenses-section { border-top: 1px solid #f0f4f2; padding: 1rem 1.25rem; background: #fafcfb; }
+  .expenses-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 0.75rem; }
+  .expense-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  @media(max-width: 480px) { .expense-list { grid-template-columns: 1fr; } }
+  .expense-item { display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid #e8f0ec; border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.83rem; }
+  .expense-name { color: #444; }
+  .expense-val { font-weight: 600; color: #0F6E56; }
+  .day-total { margin-top: 0.75rem; display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-size: 0.85rem; }
+  .day-total span { color: #888; }
+  .day-total strong { color: #0F6E56; font-size: 1rem; }
+
+  .budget-card { background: white; border-radius: 16px; border: 1px solid #e0ece7; overflow: hidden; }
+  .budget-header { background: #085041; color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .budget-header h3 { font-size: 1rem; font-weight: 600; opacity: 0.9; }
+  .budget-total { font-size: 1.8rem; font-weight: 700; }
+  .budget-body { padding: 1.25rem 1.5rem; }
+  .budget-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #f0f4f2; font-size: 0.9rem; }
+  .budget-row:last-child { border-bottom: none; }
+  .budget-row .label { color: #555; }
+  .budget-row .amount { font-weight: 600; color: #1D9E75; }
+
+  /* CONTROLE */
+  .ctrl-card { background: white; border-radius: 16px; border: 1px solid #e0ece7; overflow: hidden; }
+  .ctrl-status { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0.6rem 1rem; font-size: 0.8rem; border-bottom: 1px solid #f0f4f2; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
+  .status-dot.online { background: #1D9E75; }
+  .status-dot.connecting { background: #EF9F27; }
+  .status-dot.error { background: #E24B4A; }
+  .status-text { color: #888; }
+
+  .ctrl-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; padding: 1.25rem 1.5rem; background: #fafcfb; border-bottom: 1px solid #f0f4f2; }
+  .ctrl-metric { background: #F1EFE8; border-radius: 10px; padding: 0.8rem 1rem; }
+  .ctrl-metric .m-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #888; margin-bottom: 4px; }
+  .ctrl-metric .m-value { font-size: 1.1rem; font-weight: 700; color: #085041; }
+  .ctrl-metric.warn .m-value { color: #854F0B; }
+
+  .ctrl-form { padding: 1.25rem 1.5rem; border-bottom: 1px solid #f0f4f2; }
+  .ctrl-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  @media(max-width: 500px) { .ctrl-form-row { grid-template-columns: 1fr; } }
+  .ctrl-form input, .ctrl-form select { width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #d0e6dc; border-radius: 8px; font-size: 0.88rem; color: #2c2c2a; background: white; outline: none; font-family: inherit; appearance: auto; }
+  .ctrl-form input:focus, .ctrl-form select:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.12); }
+  .ctrl-form-actions { display: flex; gap: 8px; }
+  .btn-add { background: #0F6E56; color: white; border: none; border-radius: 8px; padding: 0.7rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: inherit; touch-action: manipulation; }
+  .btn-add:disabled { background: #9FE1CB; cursor: not-allowed; }
+  .btn-clear { background: white; color: #993C1D; border: 1px solid #F0997B; border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.88rem; cursor: pointer; font-family: inherit; touch-action: manipulation; }
+
+  .ctrl-list { padding: 0 1.25rem 1rem; overflow-x: auto; }
+  .ctrl-list-header { display: grid; grid-template-columns: 2fr 60px 70px 70px 28px; gap: 6px; padding: 0.5rem 0; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #aaa; border-bottom: 1px solid #f0f4f2; margin-top: 0.75rem; }
+  .ctrl-item { display: grid; grid-template-columns: 2fr 60px 70px 70px 28px; gap: 6px; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #f8f8f6; font-size: 0.85rem; }
+  .ctrl-item:last-child { border-bottom: none; }
+  .ctrl-item .ci-desc { color: #2c2c2a; word-break: break-word; }
+  .ctrl-item .ci-day { color: #888; font-size: 0.78rem; }
+  .ci-who-badge { font-size: 0.68rem; background: #E1F5EE; color: #0F6E56; border-radius: 100px; padding: 2px 6px; font-weight: 600; display: inline-block; }
+  .ci-who-badge.pamela { background: #FBEAF0; color: #993556; }
+  .ci-val { font-weight: 600; color: #085041; text-align: right; font-size: 0.83rem; }
+  .btn-del { background: none; border: none; cursor: pointer; color: #ccc; font-size: 1rem; padding: 4px; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+  .btn-del:hover, .btn-del:active { color: #E24B4A; }
+  .ctrl-empty { padding: 2rem; text-align: center; color: #bbb; font-size: 0.88rem; }
+
+  .footer { text-align: center; padding: 2rem 1rem; font-size: 0.8rem; color: #aaa; }
+  .heart { color: #D4537E; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="hero-emoji">🌊</span>
+  <h1>Jericoacoara</h1>
+  <p class="subtitle">Ceará — Brasil</p>
+  <div class="dates">📅 Quarta, 26 Jun &nbsp;→&nbsp; Segunda, 1 Jul</div>
+</div>
+
+<div class="container">
+
+  <div class="section-title">Roteiro dia a dia</div>
+
+  <div class="day-card open" id="d1">
+    <div class="day-header" onclick="toggle('d1')">
+      <div class="day-badge">Dia 1</div><h2>Viagem &amp; Chegada</h2>
+      <span class="day-date">26 Jun</span><span class="toggle-icon">▾</span>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="timeline-item"><div class="time-badge">04h00</div><div class="activity">Sair de casa</div></div>
+        <div class="timeline-item"><div class="time-badge">05h30</div><div class="activity">Saída do voo em Goiânia</div></div>
+        <div class="timeline-item"><div class="time-badge">12h05</div><div class="activity">Chegada em Fortaleza</div></div>
+        <div class="timeline-item"><div class="time-badge">14h00</div><div class="activity">Pegar transfer para Jeri</div></div>
+        <div class="timeline-item"><div class="time-badge">19h00</div><div class="activity">Chegada em Jericoacoara + acomodação no Airbnb</div></div>
+        <div class="timeline-item"><div class="time-badge">19h30</div><div class="activity">Assistir jogo do Brasil + jantar 🇧🇷</div></div>
+      </div>
+      <div class="expenses-section">
+        <div class="expenses-title">Gastos estimados</div>
+        <div class="expense-list">
+          <div class="expense-item"><span class="expense-name">Café Starbucks</span><span class="expense-val">R$ 60</span></div>
+          <div class="expense-item"><span class="expense-name">Almoço em Fortaleza</span><span class="expense-val">R$ 80</span></div>
+          <div class="expense-item"><span class="expense-name">Transfer</span><span class="expense-val">R$ 450</span></div>
+          <div class="expense-item"><span class="expense-name">Jantar</span><span class="expense-val">R$ 150</span></div>
+        </div>
+        <div class="day-total"><span>Total estimado:</span><strong>R$ 740</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-card" id="d2">
+    <div class="day-header" onclick="toggle('d2')">
+      <div class="day-badge">Dia 2</div><h2>Passeio Leste 🌅</h2>
+      <span class="day-date">27 Jun</span><span class="toggle-icon">▾</span>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="timeline-item"><div class="time-badge">08h00</div><div class="activity">Café da manhã</div></div>
+        <div class="timeline-item"><div class="time-badge">09h00</div><div class="activity">Passeio Leste (Guia Tony)</div></div>
+        <div class="timeline-item"><div class="time-badge">18h00</div><div class="activity">Chegada na Vila</div></div>
+        <div class="timeline-item"><div class="time-badge">19h00</div><div class="activity">Mercado</div></div>
+        <div class="timeline-item"><div class="time-badge">20h00</div><div class="activity">Jantar na Vila</div></div>
+      </div>
+      <div class="expenses-section">
+        <div class="expenses-title">Gastos estimados</div>
+        <div class="expense-list">
+          <div class="expense-item"><span class="expense-name">Passeio Leste</span><span class="expense-val">R$ 200</span></div>
+          <div class="expense-item"><span class="expense-name">Entrada</span><span class="expense-val">R$ 120</span></div>
+          <div class="expense-item"><span class="expense-name">Almoço</span><span class="expense-val">R$ 200</span></div>
+          <div class="expense-item"><span class="expense-name">Mercado</span><span class="expense-val">R$ 100</span></div>
+          <div class="expense-item"><span class="expense-name">Jantar</span><span class="expense-val">R$ 160</span></div>
+        </div>
+        <div class="day-total"><span>Total estimado:</span><strong>R$ 780</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-card" id="d3">
+    <div class="day-header" onclick="toggle('d3')">
+      <div class="day-badge">Dia 3</div><h2>Passeio Oeste + Pôr do Sol 🌄</h2>
+      <span class="day-date">28 Jun</span><span class="toggle-icon">▾</span>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="timeline-item"><div class="time-badge">08h00</div><div class="activity">Café da manhã</div></div>
+        <div class="timeline-item"><div class="time-badge">09h00</div><div class="activity">Passeio Oeste</div></div>
+        <div class="timeline-item"><div class="time-badge">15h00</div><div class="activity">Saída do passeio</div></div>
+        <div class="timeline-item"><div class="time-badge">16h00</div><div class="activity">Descanso</div></div>
+        <div class="timeline-item"><div class="time-badge">17h00</div><div class="activity">Pôr do sol nas dunas 🌇</div></div>
+        <div class="timeline-item"><div class="time-badge">20h00</div><div class="activity">Jantar na Vila</div></div>
+      </div>
+      <div class="expenses-section">
+        <div class="expenses-title">Gastos estimados</div>
+        <div class="expense-list">
+          <div class="expense-item"><span class="expense-name">Passeio Oeste</span><span class="expense-val">R$ 160</span></div>
+          <div class="expense-item"><span class="expense-name">Atrações</span><span class="expense-val">R$ 50</span></div>
+          <div class="expense-item"><span class="expense-name">Almoço</span><span class="expense-val">R$ 180</span></div>
+          <div class="expense-item"><span class="expense-name">Jantar</span><span class="expense-val">R$ 140</span></div>
+        </div>
+        <div class="day-total"><span>Total estimado:</span><strong>R$ 530</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-card" id="d4">
+    <div class="day-header" onclick="toggle('d4')">
+      <div class="day-badge">Dia 4</div><h2>Canoa Havaiana + Trilha 🛶</h2>
+      <span class="day-date">29 Jun</span><span class="toggle-icon">▾</span>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="timeline-item"><div class="time-badge">04h30</div><div class="activity">Saída do Airbnb</div></div>
+        <div class="timeline-item"><div class="time-badge">05h00</div><div class="activity">Canoa havaiana 🌅</div></div>
+        <div class="timeline-item"><div class="time-badge">07h00</div><div class="activity">Café da manhã</div></div>
+        <div class="timeline-item"><div class="time-badge">—</div><div class="activity">Programação flexível: SUP ou ficar na praia 🏄</div></div>
+        <div class="timeline-item"><div class="time-badge">16h00</div><div class="activity">Trilha da Pedra Furada 🧗</div></div>
+        <div class="timeline-item"><div class="time-badge">20h00</div><div class="activity">Jantar na Vila</div></div>
+      </div>
+      <div class="expenses-section">
+        <div class="expenses-title">Gastos estimados</div>
+        <div class="expense-list">
+          <div class="expense-item"><span class="expense-name">Canoagem</span><span class="expense-val">R$ 250</span></div>
+          <div class="expense-item"><span class="expense-name">SUP (opcional)</span><span class="expense-val">R$ 100</span></div>
+          <div class="expense-item"><span class="expense-name">Almoço</span><span class="expense-val">R$ 150</span></div>
+          <div class="expense-item"><span class="expense-name">Jantar</span><span class="expense-val">R$ 100</span></div>
+        </div>
+        <div class="day-total"><span>Total estimado:</span><strong>R$ 600</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-card" id="d5">
+    <div class="day-header" onclick="toggle('d5')">
+      <div class="day-badge">Dia 5</div><h2>Retorno para Fortaleza 🚌</h2>
+      <span class="day-date">30 Jun</span><span class="toggle-icon">▾</span>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="timeline-item"><div class="time-badge">06h30</div><div class="activity">Checkout do Airbnb</div></div>
+        <div class="timeline-item"><div class="time-badge">07h00</div><div class="activity">Carro para Jijoca</div></div>
+        <div class="timeline-item"><div class="time-badge">08h30</div><div class="activity">Saída ônibus de Jijoca</div></div>
+        <div class="timeline-item"><div class="time-badge">14h00</div><div class="activity">Chegada em Fortaleza</div></div>
+        <div class="timeline-item"><div class="time-badge">15h00</div><div class="activity">Acomodação no Airbnb Fortaleza</div></div>
+        <div class="timeline-item"><div class="time-badge">16h00</div><div class="activity">Mercado Central (almoço tardio) 🦐</div></div>
+        <div class="timeline-item"><div class="time-badge">17h00</div><div class="activity">Praia de Iracema</div></div>
+        <div class="timeline-item"><div class="time-badge">19h00</div><div class="activity">Feira da Praia de Iracema 🎶</div></div>
+      </div>
+      <div class="expenses-section">
+        <div class="expenses-title">Gastos estimados</div>
+        <div class="expense-list">
+          <div class="expense-item"><span class="expense-name">Passagem vila → Jijoca</span><span class="expense-val">R$ 130</span></div>
+          <div class="expense-item"><span class="expense-name">Passagem ônibus</span><span class="expense-val">R$ 160</span></div>
+          <div class="expense-item"><span class="expense-name">Almoço</span><span class="expense-val">R$ 100</span></div>
+          <div class="expense-item"><span class="expense-name">Janta</span><span class="expense-val">R$ 140</span></div>
+          <div class="expense-item"><span class="expense-name">Uber</span><span class="expense-val">R$ 40</span></div>
+        </div>
+        <div class="day-total"><span>Total estimado:</span><strong>R$ 570</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-card" id="d6">
+    <div class="day-header" onclick="toggle('d6')">
+      <div class="day-badge">Dia 6</div><h2>Volta para Casa ✈️</h2>
+      <span class="day-date">1 Jul</span><span class="toggle-icon">▾</span>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="timeline-item"><div class="time-badge">07h00</div><div class="activity">Sair do hotel / Airbnb</div></div>
+        <div class="timeline-item"><div class="time-badge">09h00</div><div class="activity">Saída do voo em Fortaleza</div></div>
+        <div class="timeline-item"><div class="time-badge">—</div><div class="activity">De volta com a memória cheia de areia 🌊</div></div>
+      </div>
+      <div class="expenses-section">
+        <div class="expenses-title">Gastos estimados</div>
+        <div class="expense-list">
+          <div class="expense-item"><span class="expense-name">Uber</span><span class="expense-val">R$ 40</span></div>
+        </div>
+        <div class="day-total"><span>Total estimado:</span><strong>R$ 40</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Orçamento estimado</div>
+  <div class="budget-card">
+    <div class="budget-header">
+      <div>
+        <h3>Total estimado (despesas na viagem)</h3>
+        <p style="font-size:0.82rem;opacity:0.7;margin-top:4px;">Não inclui passagens e Airbnb</p>
+      </div>
+      <div class="budget-total">R$ 3.260</div>
+    </div>
+    <div class="budget-body">
+      <div class="budget-row"><span class="label">Dia 1 — Chegada</span><span class="amount">R$ 740</span></div>
+      <div class="budget-row"><span class="label">Dia 2 — Passeio Leste</span><span class="amount">R$ 780</span></div>
+      <div class="budget-row"><span class="label">Dia 3 — Passeio Oeste</span><span class="amount">R$ 530</span></div>
+      <div class="budget-row"><span class="label">Dia 4 — Canoa + Trilha</span><span class="amount">R$ 600</span></div>
+      <div class="budget-row"><span class="label">Dia 5 — Fortaleza</span><span class="amount">R$ 570</span></div>
+      <div class="budget-row"><span class="label">Dia 6 — Volta</span><span class="amount">R$ 40</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Controle de gastos real</div>
+  <div class="ctrl-card">
+
+    <div class="ctrl-status">
+      <div class="status-dot connecting" id="status-dot"></div>
+      <span class="status-text" id="status-text">Conectando ao banco de dados...</span>
+    </div>
+
+    <div class="ctrl-summary">
+      <div class="ctrl-metric">
+        <div class="m-label">Total gasto</div>
+        <div class="m-value" id="m-total">R$ 0</div>
+      </div>
+      <div class="ctrl-metric">
+        <div class="m-label">John pagou</div>
+        <div class="m-value" id="m-john">R$ 0</div>
+      </div>
+      <div class="ctrl-metric">
+        <div class="m-label">Pâmela pagou</div>
+        <div class="m-value" id="m-pam">R$ 0</div>
+      </div>
+      <div class="ctrl-metric" id="m-acerto-card">
+        <div class="m-label">Acerto final</div>
+        <div class="m-value" id="m-acerto">—</div>
+      </div>
+    </div>
+
+    <div class="ctrl-form">
+      <div class="ctrl-form-row">
+        <input type="text" id="f-desc" placeholder="Descrição (ex: almoço na praia)" autocomplete="off" />
+        <input type="number" id="f-val" placeholder="Valor (R$)" min="0" step="0.01" inputmode="decimal" />
+      </div>
+      <div class="ctrl-form-row">
+        <select id="f-who">
+          <option value="John">Quem pagou: John</option>
+          <option value="Pâmela">Quem pagou: Pâmela</option>
+        </select>
+        <select id="f-day">
+          <option value="Dia 1">Dia 1 — Quarta (26/06)</option>
+          <option value="Dia 2">Dia 2 — Quinta (27/06)</option>
+          <option value="Dia 3">Dia 3 — Sexta (28/06)</option>
+          <option value="Dia 4">Dia 4 — Sábado (29/06)</option>
+          <option value="Dia 5">Dia 5 — Domingo (30/06)</option>
+          <option value="Dia 6">Dia 6 — Segunda (01/07)</option>
+        </select>
+      </div>
+      <div class="ctrl-form-actions">
+        <button class="btn-add" id="btn-add" onclick="addItem()" disabled>+ Adicionar gasto</button>
+        <button class="btn-clear" onclick="clearAll()">Limpar tudo</button>
+      </div>
+    </div>
+
+    <div class="ctrl-list">
+      <div class="ctrl-list-header">
+        <span>Descrição</span><span>Dia</span><span>Quem</span><span style="text-align:right">Valor</span><span></span>
+      </div>
+      <div id="items-list"><div class="ctrl-empty">Conectando...</div></div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">Feito com <span class="heart">♥</span> para uma viagem inesquecível 🌊</div>
+
+<script>
+  function toggle(id) {
+    var card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyABr7jXdwwxrrLIvRxBQoWeUN5B_8sqeL8",
+    authDomain: "jericoacoara-ade38.firebaseapp.com",
+    projectId: "jericoacoara-ade38",
+    storageBucket: "jericoacoara-ade38.firebasestorage.app",
+    messagingSenderId: "803633231808",
+    appId: "1:803633231808:web:4dc292d79fa324eaa2ba25"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const col = collection(db, "gastos");
+
+  const dot = document.getElementById('status-dot');
+  const statusText = document.getElementById('status-text');
+  const btnAdd = document.getElementById('btn-add');
+
+  function fmt(v) {
+    return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function render(items) {
+    const list = document.getElementById('items-list');
+    if (items.length === 0) {
+      list.innerHTML = '<div class="ctrl-empty">Nenhum gasto ainda. Adicione o primeiro acima!</div>';
+    } else {
+      list.innerHTML = items.map(it => `
+        <div class="ctrl-item">
+          <span class="ci-desc">${esc(it.desc)}</span>
+          <span class="ci-day">${esc(it.day)}</span>
+          <span><span class="ci-who-badge ${it.who === 'Pâmela' ? 'pamela' : ''}">${esc(it.who)}</span></span>
+          <span class="ci-val">${fmt(it.val)}</span>
+          <button class="btn-del" data-id="${it.id}" title="Remover">✕</button>
+        </div>
+      `).join('');
+      list.querySelectorAll('.btn-del').forEach(btn => {
+        btn.addEventListener('click', () => deleteDoc(doc(db, 'gastos', btn.dataset.id)));
+      });
+    }
+
+    const total = items.reduce((s, it) => s + Number(it.val), 0);
+    const john  = items.filter(it => it.who === 'John').reduce((s, it) => s + Number(it.val), 0);
+    const pam   = items.filter(it => it.who === 'Pâmela').reduce((s, it) => s + Number(it.val), 0);
+    const diff  = john - pam;
+
+    document.getElementById('m-total').textContent = fmt(total);
+    document.getElementById('m-john').textContent  = fmt(john);
+    document.getElementById('m-pam').textContent   = fmt(pam);
+
+    const acertoEl   = document.getElementById('m-acerto');
+    const acertoCard = document.getElementById('m-acerto-card');
+    if (total === 0) {
+      acertoEl.textContent = '—';
+      acertoCard.className = 'ctrl-metric';
+    } else if (Math.abs(diff) < 0.01) {
+      acertoEl.textContent = 'Dividido igual!';
+      acertoCard.className = 'ctrl-metric';
+    } else if (diff > 0) {
+      acertoEl.textContent = 'Pâmela → John ' + fmt(diff / 2);
+      acertoCard.className = 'ctrl-metric warn';
+    } else {
+      acertoEl.textContent = 'John → Pâmela ' + fmt(Math.abs(diff) / 2);
+      acertoCard.className = 'ctrl-metric warn';
+    }
+  }
+
+  const q = query(col, orderBy('ts', 'asc'));
+  onSnapshot(q, snap => {
+    dot.className = 'status-dot online';
+    statusText.textContent = 'Sincronizado em tempo real ✓';
+    btnAdd.disabled = false;
+    render(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  }, () => {
+    dot.className = 'status-dot error';
+    statusText.textContent = 'Erro de conexão — verifique a internet';
+  });
+
+  async function addItem() {
+    const desc = document.getElementById('f-desc').value.trim();
+    const val  = parseFloat(document.getElementById('f-val').value);
+    const who  = document.getElementById('f-who').value;
+    const day  = document.getElementById('f-day').value;
+    if (!desc || isNaN(val) || val <= 0) { document.getElementById('f-desc').focus(); return; }
+    btnAdd.disabled = true;
+    btnAdd.textContent = 'Salvando...';
+    await addDoc(col, { desc, val, who, day, ts: serverTimestamp() });
+    btnAdd.disabled = false;
+    btnAdd.textContent = '+ Adicionar gasto';
+    document.getElementById('f-desc').value = '';
+    document.getElementById('f-val').value  = '';
+    document.getElementById('f-desc').focus();
+  }
+
+  document.getElementById('btn-add').addEventListener('click', addItem);
+  document.getElementById('f-val').addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
+
+  window.clearAll = async function() {
+    if (!confirm('Limpar todos os gastos registrados?')) return;
+    const snap = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")
+      .then(m => m.getDocs(col));
+    snap.forEach(d => deleteDoc(doc(db, 'gastos', d.id)));
+  };
+</script>
+</body>
+</html>
